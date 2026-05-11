@@ -198,6 +198,22 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--a
 }
 ::-webkit-scrollbar{width:3px;height:3px}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+
+/* ══ SETTINGS PAGE ══ */
+.set-wrap{max-width:480px;margin:0 auto;padding:16px}
+.set-tabs{display:flex;gap:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:16px;box-shadow:var(--sh)}
+.set-tab{flex:1;padding:10px 4px;text-align:center;font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;border:none;background:none;font-family:var(--font);transition:all .2s;border-right:1px solid var(--border)}
+.set-tab:last-child{border-right:none}
+.set-tab.on{background:var(--accent);color:#fff}
+.set-tab span{display:block;font-size:15px;margin-bottom:1px}
+.set-section{display:none}.set-section.on{display:block}
+.empty{text-align:center;padding:28px 16px;color:var(--muted);font-size:13px}
+.inp-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.emoji-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;margin-top:8px}
+.emoji-btn{font-size:20px;padding:5px;border-radius:7px;cursor:pointer;text-align:center;background:var(--bg);border:2px solid transparent;transition:all .15s}
+.emoji-btn.sel{border-color:var(--green);background:var(--green-dim)}
+select.inp{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%237a7570' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+.tag-green{background:#d1fae5;color:#065f46}.tag-gold{background:#fef3c7;color:#92400e}
 </style>
 </head>
 <body>
@@ -487,6 +503,159 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--a
 </div>
 
 <!-- MODAL: SUCCESS PAY -->
+<!-- SETTINGS SCREEN -->
+<div class="screen" id="s-settings">
+  <div style="background:var(--surface);border-bottom:1px solid var(--border);padding:0 14px;height:52px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:20">
+    <div style="width:34px;height:34px;border-radius:50%;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px" onclick="goSettings(false)">←</div>
+    <div style="font-size:17px;font-weight:800">⚙️ ตั้งค่าร้าน</div>
+  </div>
+  <div class="set-wrap">
+    <div class="set-tabs">
+      <button class="set-tab on" onclick="showSetTab('ingredients')"><span>🥩</span>วัตถุดิบ</button>
+      <button class="set-tab" onclick="showSetTab('menus')"><span>🍽️</span>เมนู</button>
+      <button class="set-tab" onclick="showSetTab('costs')"><span>💰</span>ต้นทุน</button>
+      <button class="set-tab" onclick="showSetTab('goals')"><span>🎯</span>เป้าหมาย</button>
+    </div>
+    <div class="set-section on" id="sset-ingredients">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div style="font-size:14px;font-weight:700">วัตถุดิบทั้งหมด</div>
+        <button class="btn btn-dark btn-sm" onclick="showAddIng()">+ เพิ่ม</button>
+      </div>
+      <div class="card" id="ingList"><div class="empty">ยังไม่มีวัตถุดิบ<br>กด + เพิ่มได้เลย</div></div>
+    </div>
+    <div class="set-section" id="sset-menus">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div style="font-size:14px;font-weight:700">เมนูทั้งหมด</div>
+        <button class="btn btn-dark btn-sm" onclick="showAddMenu()">+ เพิ่ม</button>
+      </div>
+      <div class="card" id="setMenuList"><div class="empty">ยังไม่มีเมนู<br>กด + เพิ่มได้เลย</div></div>
+    </div>
+    <div class="set-section" id="sset-costs">
+      <div class="card">
+        <div class="card-title">ต้นทุนแฝงประจำวัน</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:14px">ใส่ครั้งเดียว ระบบคิดต้นทุนต่อจานให้อัตโนมัติ</div>
+        <div class="field"><label class="lbl">ค่าแรงรวม (บาท/วัน)</label><input class="inp" id="c-labor" type="number" placeholder="1400" inputmode="numeric"></div>
+        <div class="inp-row">
+          <div class="field"><label class="lbl">ค่าเช่า (บาท/เดือน)</label><input class="inp" id="c-rent" type="number" placeholder="3000" inputmode="numeric"></div>
+          <div class="field"><label class="lbl">ค่าแก๊ส (บาท/เดือน)</label><input class="inp" id="c-gas" type="number" placeholder="900" inputmode="numeric"></div>
+        </div>
+        <div class="inp-row">
+          <div class="field"><label class="lbl">ค่าไฟ (บาท/เดือน)</label><input class="inp" id="c-elec" type="number" placeholder="600" inputmode="numeric"></div>
+          <div class="field"><label class="lbl">ค่าน้ำ (บาท/เดือน)</label><input class="inp" id="c-water" type="number" placeholder="200" inputmode="numeric"></div>
+        </div>
+        <div class="divider"></div>
+        <div class="card-title">GP แพลตฟอร์ม</div>
+        <div class="inp-row">
+          <div class="field"><label class="lbl">Grab (%)</label><input class="inp" id="c-grab" type="number" placeholder="30" inputmode="numeric"></div>
+          <div class="field"><label class="lbl">LINE MAN (%)</label><input class="inp" id="c-lineman" type="number" placeholder="30" inputmode="numeric"></div>
+        </div>
+        <div class="divider"></div>
+        <div class="card-title">เป้า GP%</div>
+        <div class="inp-row">
+          <div class="field"><label class="lbl">Target GP%</label><input class="inp" id="c-target-gp" type="number" placeholder="35" inputmode="numeric"></div>
+          <div class="field"><label class="lbl">แจ้งเตือนราคาขึ้น (%)</label><input class="inp" id="c-price-alert" type="number" placeholder="10" inputmode="numeric"></div>
+        </div>
+        <button class="btn btn-green btn-full" style="padding:13px;font-size:15px;margin-top:4px" onclick="saveCosts()">💾 บันทึกต้นทุน</button>
+      </div>
+      <div class="card" id="costCalcCard">
+        <div class="card-title">ต้นทุนแฝงต่อจาน</div>
+        <div id="costCalcResult" style="color:var(--muted);font-size:13px">กรอกข้อมูลแล้วกดบันทึก</div>
+      </div>
+    </div>
+    <div class="set-section" id="sset-goals">
+      <div class="card">
+        <div class="card-title">🎯 เป้าหมายระยะยาว</div>
+        <div class="field"><label class="lbl">เป้าหมาย</label><input class="inp" id="g-goal" placeholder="เช่น เปิดสาขาสองใน 18 เดือน"></div>
+        <div class="inp-row">
+          <div class="field"><label class="lbl">ระยะเวลา (เดือน)</label><input class="inp" id="g-months" type="number" placeholder="18" inputmode="numeric"></div>
+          <div class="field"><label class="lbl">เงินเป้าหมาย (฿)</label><input class="inp" id="g-amount" type="number" placeholder="500000" inputmode="numeric"></div>
+        </div>
+        <button class="btn btn-green btn-full" style="padding:13px" onclick="saveGoal()">💾 บันทึกเป้าหมาย</button>
+      </div>
+      <div class="card" id="goalProgress" style="display:none">
+        <div class="card-title">ความคืบหน้า</div>
+        <div id="goalProgressContent"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">📊 ข้อมูลร้าน</div>
+        <div class="field"><label class="lbl">ชื่อร้าน</label><input class="inp" id="g-store-name" placeholder="ชื่อร้าน"></div>
+        <div class="field"><label class="lbl">ชื่อเจ้าของ</label><input class="inp" id="g-owner-name" placeholder="ชื่อเจ้าของ"></div>
+        <div class="field"><label class="lbl">จำนวนที่นั่ง</label><input class="inp" id="g-seats" type="number" placeholder="20" inputmode="numeric"></div>
+        <button class="btn btn-dark btn-full" style="padding:13px" onclick="saveStoreInfo()">💾 บันทึกข้อมูลร้าน</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: ADD INGREDIENT -->
+<div class="modal-ov" id="ingModal" style="display:none">
+  <div class="modal">
+    <div class="modal-title" id="ingModalTitle">เพิ่มวัตถุดิบ</div>
+    <div class="field"><label class="lbl">ชื่อวัตถุดิบ</label><input class="inp" id="ing-name" placeholder="เช่น แซลมอนแอทแลนติก"></div>
+    <div class="inp-row">
+      <div class="field"><label class="lbl">หน่วย</label>
+        <select class="inp" id="ing-unit">
+          <option value="กก.">กก.</option><option value="g">g</option>
+          <option value="ลิตร">ลิตร</option><option value="ml">ml</option>
+          <option value="ชิ้น">ชิ้น</option><option value="ฟอง">ฟอง</option>
+          <option value="โหล">โหล</option><option value="แพ็ก">แพ็ก</option>
+          <option value="ขวด">ขวด</option>
+        </select>
+      </div>
+      <div class="field"><label class="lbl">ราคา/หน่วย (฿)</label><input class="inp" id="ing-price" type="number" placeholder="850" inputmode="decimal"></div>
+    </div>
+    <div class="inp-row">
+      <div class="field"><label class="lbl">สต็อกเริ่มต้น</label><input class="inp" id="ing-stock" type="number" placeholder="0" inputmode="decimal"></div>
+      <div class="field"><label class="lbl">ต้องการต่อวัน</label><input class="inp" id="ing-daily" type="number" placeholder="2.5" inputmode="decimal"></div>
+    </div>
+    <div class="field"><label class="lbl">แจ้งเตือนเมื่อเหลือน้อยกว่า</label><input class="inp" id="ing-alert" type="number" placeholder="0.5" inputmode="decimal"></div>
+    <div class="field"><label class="lbl">Emoji</label>
+      <div class="emoji-grid" id="ingEmojis">🐟🐠🐡🦐🦑🦪🥩🍗🥚🍚🌿🥦🥕🧅🧄🌶️🍋🥭🍓🧂🫙📦🧴🥛💧🧊🍵☕</div>
+    </div>
+    <input type="hidden" id="ing-emoji-val" value="📦">
+    <input type="hidden" id="ing-edit-id" value="">
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-full" onclick="closeIngModal()">ยกเลิก</button>
+      <button class="btn btn-dark btn-full" onclick="saveIngredient()">บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: ADD MENU -->
+<div class="modal-ov" id="menuModal" style="display:none">
+  <div class="modal">
+    <div class="modal-title" id="menuModalTitle">เพิ่มเมนู</div>
+    <div class="field"><label class="lbl">ชื่อเมนู</label><input class="inp" id="m-name" placeholder="เช่น โทโร่ซาชิมิ 200g"></div>
+    <div class="inp-row">
+      <div class="field"><label class="lbl">ราคาขาย (฿)</label><input class="inp" id="m-price" type="number" placeholder="420" inputmode="numeric" oninput="calcMenuMargin()"></div>
+      <div class="field"><label class="lbl">ต้นทุน (฿/จาน)</label><input class="inp" id="m-cost" type="number" placeholder="195" inputmode="numeric" oninput="calcMenuMargin()"></div>
+    </div>
+    <div id="marginPreview" style="margin-bottom:12px;padding:10px;background:var(--bg);border-radius:var(--rsm);font-size:13px;display:none">
+      กำไร <span id="marginVal" style="font-weight:800;font-family:var(--mono)"></span>
+    </div>
+    <div class="inp-row">
+      <div class="field"><label class="lbl">หมวดหมู่</label>
+        <select class="inp" id="m-cat">
+          <option value="โปรโมชัน">โปรโมชัน</option><option value="ซาชิมิ">ซาชิมิ</option>
+          <option value="ซีฟู้ด">ซีฟู้ด</option><option value="เครื่องเคียง">เครื่องเคียง</option>
+          <option value="ของหวาน">ของหวาน</option><option value="เครื่องดื่ม">เครื่องดื่ม</option>
+          <option value="อื่นๆ">อื่นๆ</option>
+        </select>
+      </div>
+      <div class="field"><label class="lbl">รายละเอียด</label><input class="inp" id="m-sub" placeholder="เช่น ส่วนท้อง"></div>
+    </div>
+    <div class="field"><label class="lbl">Emoji</label>
+      <div class="emoji-grid" id="menuEmojis">🍣🍱🍜🍚🦐🐟🐠🔥🎁❤️💝🍽️🥬🥒🌶️🥭🍓🥤🍵☕🧋🍊💧</div>
+    </div>
+    <input type="hidden" id="m-emoji-val" value="🍽️">
+    <input type="hidden" id="m-edit-id" value="">
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-full" onclick="closeMenuModal()">ยกเลิก</button>
+      <button class="btn btn-dark btn-full" onclick="saveMenu()">บันทึก</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-ov" id="payModal" style="display:none">
   <div class="modal" style="text-align:center">
     <div style="font-size:46px;margin-bottom:10px">✅</div>
@@ -642,12 +811,23 @@ function switchPg(p) {
 }
 
 // Go to settings page
-function goSettings() {
-  window.location.href = 'settings.html';
-}
 window.goSettings = goSettings;
 
 // Expose to global
+window.showAddIng = showAddIng;
+window.editIng = editIng;
+window.deleteIng = deleteIng;
+window.closeIngModal = closeIngModal;
+window.saveIngredient = saveIngredient;
+window.showAddMenu = showAddMenu;
+window.editMenu = editMenu;
+window.deleteMenu = deleteMenu;
+window.closeMenuModal = closeMenuModal;
+window.calcMenuMargin = calcMenuMargin;
+window.saveCosts = saveCosts;
+window.saveGoal = saveGoal;
+window.saveStoreInfo = saveStoreInfo;
+window.showSetTab = showSetTab;
 window.switchPg = switchPg;
 window.filterCat = filterCat;
 window.addToOrder = addToOrder;
@@ -880,7 +1060,23 @@ function renderHomeAlerts() {
   });
   const css = '.stock-alert{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:9px;margin-bottom:8px;font-size:13px;font-weight:500}.stock-alert.danger{background:#fee2e2;color:#991b1b;border:1px solid #fca5a5}';
   document.getElementById('homeAlerts').innerHTML = alerts.length
-    ? `<style>${css}</style><div class="card" style="padding:12px 14px">${alerts.join('')}</div>` : '';
+    ? `<style>${css}
+/* ══ SETTINGS PAGE ══ */
+.set-wrap{max-width:480px;margin:0 auto;padding:16px}
+.set-tabs{display:flex;gap:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:16px;box-shadow:var(--sh)}
+.set-tab{flex:1;padding:10px 4px;text-align:center;font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;border:none;background:none;font-family:var(--font);transition:all .2s;border-right:1px solid var(--border)}
+.set-tab:last-child{border-right:none}
+.set-tab.on{background:var(--accent);color:#fff}
+.set-tab span{display:block;font-size:15px;margin-bottom:1px}
+.set-section{display:none}.set-section.on{display:block}
+.empty{text-align:center;padding:28px 16px;color:var(--muted);font-size:13px}
+.inp-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.emoji-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;margin-top:8px}
+.emoji-btn{font-size:20px;padding:5px;border-radius:7px;cursor:pointer;text-align:center;background:var(--bg);border:2px solid transparent;transition:all .15s}
+.emoji-btn.sel{border-color:var(--green);background:var(--green-dim)}
+select.inp{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%237a7570' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+.tag-green{background:#d1fae5;color:#065f46}.tag-gold{background:#fef3c7;color:#92400e}
+</style><div class="card" style="padding:12px 14px">${alerts.join('')}</div>` : '';
 }
 
 // ══════════════════════════════════════
@@ -1579,6 +1775,254 @@ async function saveSupplier() {
     closeSupplierModal(); renderSuppliers(); showLoad(false); toast('เพิ่ม Supplier แล้ว ✓');
   } catch(e) { showLoad(false); toast('เกิดข้อผิดพลาด'); }
 }
+
+// ═══════════════════════════
+// SETTINGS MODULE
+// ═══════════════════════════
+let editIngId = '';
+let editMenuId = '';
+
+window.goSettings = function(show) {
+  if(show === false) { go('s-app'); return; }
+  go('s-settings');
+  loadSettingsData();
+};
+
+window.showSetTab = function(t) {
+  const tabs = ['ingredients','menus','costs','goals'];
+  document.querySelectorAll('.set-tab').forEach((b,i) => b.classList.toggle('on', tabs[i] === t));
+  document.querySelectorAll('.set-section').forEach(s => s.classList.remove('on'));
+  const el = document.getElementById('sset-' + t);
+  if(el) el.classList.add('on');
+};
+
+async function loadSettingsData() {
+  showLoad(true);
+  try {
+    const [ingSnap, menuSnap, storeSnap] = await Promise.all([
+      getDocs(col('ingredients')),
+      getDocs(col('menus')),
+      getDoc(doc(db, 'stores', storeId))
+    ]);
+    ingredients = ingSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+    menus = menuSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const data = storeSnap.data() || {};
+    storeSettings = data.settings || {};
+    renderIngList();
+    renderSetMenuList();
+    loadCostForm();
+    loadGoalForm(data.info || {}, data.goals || {});
+  } catch(e) { toast('โหลดไม่ได้: ' + e.message); }
+  showLoad(false);
+}
+
+function renderIngList() {
+  const el = document.getElementById('ingList');
+  if(!el) return;
+  if(!ingredients.length) { el.innerHTML = '<div style="text-align:center;padding:28px;color:var(--muted);font-size:13px">ยังไม่มีวัตถุดิบ</div>'; return; }
+  el.innerHTML = ingredients.map(g => '<div class="row"><div class="row-icon">' + (g.icon||'x1F4E6') + '</div><div class="row-body"><div class="row-name">' + g.name + '</div><div class="row-sub">฿' + (g.current_price||0) + '/' + g.unit + ' · ' + (g.stock_qty||0).toFixed(1) + ' ' + g.unit + '</div></div><div style="display:flex;gap:5px;flex-shrink:0"><button class="btn btn-outline btn-sm" onclick="editIng('' + g.id + '')">แก้</button><button class="btn btn-sm" style="background:none;color:var(--red);border:1px solid var(--red)" onclick="deleteIng('' + g.id + '')">ลบ</button></div></div>').join('');
+}
+
+function setupEmojiGrid(gridId, hiddenId, sel) {
+  const grid = document.getElementById(gridId);
+  if(!grid) return;
+  const emojis = ['x1F41F','x1F420','x1F421','x1F990','x1F991','x1F9AA','x1F969','x1F357','x1F95A','x1F35A','x1F33F','x1F956','x1F955','x1F9C5','x1F9C4','x1F336','x1F34B','x1FAD9','x1F353','x1F9C2','x1FAD9','x1F4E6','x1F9F4','x1F9C8','x1F4A7','x1F9CA','x1F375','x2615'];
+  const rawEmojis = ['🐟','🐠','🐡','🦐','🦑','🦪','🥩','🍗','🥚','🍚','🌿','🦴','🥕','🧅','🧄','🌶️','🍋','🥭','🍓','🧂','🫙','📦','🧴','🥛','💧','🧊','🍵','☕','🍣','🍱','🍜','🔥','🎁','❤️','🍽️','🥬','🥒','🥤','🧋','🍊'];
+  grid.innerHTML = rawEmojis.map(e => '<div class="emoji-btn ' + (e===sel?'sel':'') + '" onclick="selectEmoji('' + gridId + '','' + hiddenId + '','' + e + '',this)">' + e + '</div>').join('');
+}
+
+window.selectEmoji = function(gridId, hiddenId, emoji, el) {
+  document.querySelectorAll('#' + gridId + ' .emoji-btn').forEach(b => b.classList.remove('sel'));
+  el.classList.add('sel');
+  document.getElementById(hiddenId).value = emoji;
+};
+
+window.showAddIng = function() {
+  editIngId = '';
+  document.getElementById('ingModalTitle').textContent = 'เพิ่มวัตถุดิบ';
+  ['ing-name','ing-price','ing-stock','ing-daily','ing-alert'].forEach(id => { const e=document.getElementById(id); if(e) e.value=''; });
+  document.getElementById('ing-emoji-val').value = '📦';
+  document.getElementById('ingModal').style.display = 'flex';
+  setTimeout(() => setupEmojiGrid('ingEmojis','ing-emoji-val','📦'), 50);
+};
+
+window.editIng = function(id) {
+  const g = ingredients.find(x => x.id === id); if(!g) return;
+  editIngId = id;
+  document.getElementById('ingModalTitle').textContent = 'แก้ไขวัตถุดิบ';
+  document.getElementById('ing-name').value = g.name||'';
+  document.getElementById('ing-unit').value = g.unit||'กก.';
+  document.getElementById('ing-price').value = g.current_price||'';
+  document.getElementById('ing-stock').value = g.stock_qty||'';
+  document.getElementById('ing-daily').value = g.daily_need||'';
+  document.getElementById('ing-alert').value = g.alert_below||'';
+  document.getElementById('ing-emoji-val').value = g.icon||'📦';
+  document.getElementById('ingModal').style.display = 'flex';
+  setTimeout(() => setupEmojiGrid('ingEmojis','ing-emoji-val',g.icon||'📦'), 50);
+};
+
+window.closeIngModal = function() { document.getElementById('ingModal').style.display = 'none'; };
+
+window.saveIngredient = async function() {
+  const name = document.getElementById('ing-name').value.trim();
+  if(!name) { toast('กรุณาใส่ชื่อ'); return; }
+  const data = { name, unit: document.getElementById('ing-unit').value, current_price: parseFloat(document.getElementById('ing-price').value)||0, stock_qty: parseFloat(document.getElementById('ing-stock').value)||0, daily_need: parseFloat(document.getElementById('ing-daily').value)||1, alert_below: parseFloat(document.getElementById('ing-alert').value)||0.5, icon: document.getElementById('ing-emoji-val').value||'📦', price_history: [], last_updated: serverTimestamp() };
+  showLoad(true);
+  try {
+    if(editIngId) { await updateDoc(colDoc('ingredients',editIngId),data); ingredients=ingredients.map(g=>g.id===editIngId?{id:editIngId,...data}:g); toast('แก้ไขแล้ว'); }
+    else { const r=await addDoc(col('ingredients'),{...data,createdAt:serverTimestamp()}); ingredients.push({id:r.id,...data}); toast('เพิ่มวัตถุดิบแล้ว'); }
+    window.closeIngModal(); renderIngList();
+  } catch(e) { toast('เกิดข้อผิดพลาด'); }
+  showLoad(false);
+};
+
+window.deleteIng = async function(id) {
+  if(!confirm('ลบวัตถุดิบนี้?')) return;
+  showLoad(true);
+  try { await deleteDoc(colDoc('ingredients',id)); ingredients=ingredients.filter(g=>g.id!==id); renderIngList(); toast('ลบแล้ว'); }
+  catch(e) { toast('เกิดข้อผิดพลาด'); }
+  showLoad(false);
+};
+
+function renderSetMenuList() {
+  const el = document.getElementById('setMenuList');
+  if(!el) return;
+  if(!menus.length) { el.innerHTML = '<div style="text-align:center;padding:28px;color:var(--muted);font-size:13px">ยังไม่มีเมนู</div>'; return; }
+  const cats = [...new Set(menus.map(m => m.cat||'อื่นๆ'))];
+  el.innerHTML = cats.map(cat => {
+    const cm = menus.filter(m=>(m.cat||'อื่นๆ')===cat);
+    return '<div style="margin-bottom:12px"><div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px">' + cat + '</div>' +
+    cm.map(m => { const c=m.current_cost||m.cost||0; const mg=m.price?Math.round((m.price-c)/m.price*100):0; const mc=mg>=35?'tag-green':'tag-gold'; return '<div class="row"><div class="row-icon">'+(m.emoji||'🍽️')+'</div><div class="row-body"><div class="row-name">'+m.name+' <span class="tag '+mc+'">'+mg+'%</span></div><div class="row-sub">฿'+m.price+' · ต้นทุน ฿'+c+'</div></div><div style="display:flex;gap:5px;flex-shrink:0"><button class="btn btn-outline btn-sm" onclick="editMenu(''+m.id+'')">แก้</button><button class="btn btn-sm" style="background:none;color:var(--red);border:1px solid var(--red)" onclick="deleteMenu(''+m.id+'')">ลบ</button></div></div>'; }).join('') + '</div>';
+  }).join('');
+}
+
+window.calcMenuMargin = function() {
+  const p=parseFloat(document.getElementById('m-price')?.value)||0;
+  const c=parseFloat(document.getElementById('m-cost')?.value)||0;
+  const prev=document.getElementById('marginPreview');
+  const val=document.getElementById('marginVal');
+  if(!prev||!val) return;
+  if(p>0){ const mg=Math.round((p-c)/p*100); prev.style.display='block'; prev.style.background=mg>=35?'#d1fae5':mg>=20?'#fef3c7':'#fee2e2'; val.textContent='฿'+(p-c)+'/จาน ('+mg+'%) '+(mg>=35?'✅ ดี':mg>=20?'⚠️ ระวัง':'❌ ต่ำเกิน'); val.style.color=mg>=35?'var(--green)':mg>=20?'var(--orange)':'var(--red)'; }
+  else { prev.style.display='none'; }
+};
+
+window.showAddMenu = function() {
+  editMenuId='';
+  document.getElementById('menuModalTitle').textContent='เพิ่มเมนู';
+  ['m-name','m-price','m-cost','m-sub'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  document.getElementById('m-emoji-val').value='🍽️';
+  const mp=document.getElementById('marginPreview'); if(mp) mp.style.display='none';
+  document.getElementById('menuModal').style.display='flex';
+  setTimeout(()=>setupEmojiGrid('menuEmojis','m-emoji-val','🍽️'),50);
+};
+
+window.editMenu = function(id) {
+  const m=menus.find(x=>x.id===id); if(!m) return;
+  editMenuId=id;
+  document.getElementById('menuModalTitle').textContent='แก้ไขเมนู';
+  document.getElementById('m-name').value=m.name||'';
+  document.getElementById('m-price').value=m.price||'';
+  document.getElementById('m-cost').value=m.current_cost||m.cost||'';
+  document.getElementById('m-cat').value=m.cat||'อื่นๆ';
+  document.getElementById('m-sub').value=m.sub||'';
+  document.getElementById('m-emoji-val').value=m.emoji||'🍽️';
+  document.getElementById('menuModal').style.display='flex';
+  setTimeout(()=>setupEmojiGrid('menuEmojis','m-emoji-val',m.emoji||'🍽️'),50);
+  window.calcMenuMargin();
+};
+
+window.closeMenuModal = function() { document.getElementById('menuModal').style.display='none'; };
+
+window.saveMenu = async function() {
+  const name=document.getElementById('m-name').value.trim();
+  const price=parseFloat(document.getElementById('m-price').value)||0;
+  if(!name||!price){toast('กรุณาใส่ชื่อและราคา');return;}
+  const cost=parseFloat(document.getElementById('m-cost').value)||0;
+  const mg=price?Math.round((price-cost)/price*100):0;
+  const data={name,price,cost,current_cost:cost,margin_pct:mg,cat:document.getElementById('m-cat').value,sub:document.getElementById('m-sub').value.trim(),emoji:document.getElementById('m-emoji-val').value||'🍽️',last_updated:serverTimestamp()};
+  showLoad(true);
+  try {
+    if(editMenuId){await updateDoc(colDoc('menus',editMenuId),data);menus=menus.map(m=>m.id===editMenuId?{id:editMenuId,...data}:m);toast('แก้ไขแล้ว');}
+    else{const r=await addDoc(col('menus'),{...data,createdAt:serverTimestamp()});menus.push({id:r.id,...data});toast('เพิ่มเมนูแล้ว');}
+    window.closeMenuModal(); renderSetMenuList(); renderMenuGrid();
+  } catch(e){toast('เกิดข้อผิดพลาด');}
+  showLoad(false);
+};
+
+window.deleteMenu = async function(id) {
+  if(!confirm('ลบเมนูนี้?')) return;
+  showLoad(true);
+  try{await deleteDoc(colDoc('menus',id));menus=menus.filter(m=>m.id!==id);renderSetMenuList();renderMenuGrid();toast('ลบแล้ว');}
+  catch(e){toast('เกิดข้อผิดพลาด');}
+  showLoad(false);
+};
+
+function loadCostForm() {
+  const s=storeSettings;
+  const sv=(id,v)=>{const e=document.getElementById(id);if(e&&v!==undefined)e.value=v;};
+  sv('c-labor',s.labor_per_day); sv('c-rent',s.rent_per_month); sv('c-gas',s.gas_per_month);
+  sv('c-elec',s.electric_per_month); sv('c-water',s.water_per_month);
+  sv('c-grab',s.gp_grab?s.gp_grab*100:30); sv('c-lineman',s.gp_lineman?s.gp_lineman*100:30);
+  sv('c-target-gp',s.target_gp||35); sv('c-price-alert',s.price_alert_pct||10);
+}
+
+window.saveCosts = async function() {
+  const g=id=>parseFloat(document.getElementById(id)?.value)||0;
+  const labor=g('c-labor')||1400; const rent=g('c-rent'); const gas=g('c-gas'); const elec=g('c-elec'); const water=g('c-water');
+  const grab=g('c-grab')||30; const lineman=g('c-lineman')||30; const tgp=g('c-target-gp')||35; const pa=g('c-price-alert')||10;
+  const df=labor+(rent+gas+elec+water)/26; const cpd=df/80;
+  const ns={labor_per_day:labor,rent_per_month:rent,gas_per_month:gas,electric_per_month:elec,water_per_month:water,gp_grab:grab/100,gp_lineman:lineman/100,target_gp:tgp,price_alert_pct:pa};
+  showLoad(true);
+  try{
+    await updateDoc(doc(db,'stores',storeId),{settings:ns});
+    storeSettings=ns;
+    const el=document.getElementById('costCalcResult');
+    if(el) el.innerHTML='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div style="background:var(--bg);border-radius:9px;padding:10px;text-align:center"><div style="font-size:10px;color:var(--muted)">ต้นทุนคงที่/วัน</div><div style="font-size:16px;font-weight:800;font-family:var(--mono)">฿'+Math.round(df).toLocaleString()+'</div></div><div style="background:var(--green-dim);border-radius:9px;padding:10px;text-align:center"><div style="font-size:10px;color:var(--muted)">ต้นทุนแฝง/จาน</div><div style="font-size:16px;font-weight:800;font-family:var(--mono);color:var(--green)">฿'+cpd.toFixed(1)+'</div></div></div>';
+    toast('บันทึกต้นทุนแล้ว ✓');
+  }catch(e){toast('เกิดข้อผิดพลาด');}
+  showLoad(false);
+};
+
+function loadGoalForm(info,goals) {
+  const sv=(id,v)=>{const e=document.getElementById(id);if(e&&v!==undefined)e.value=v;};
+  sv('g-store-name',info.name); sv('g-owner-name',info.owner); sv('g-seats',info.seats);
+  sv('g-goal',goals.description); sv('g-months',goals.months); sv('g-amount',goals.amount);
+  if(goals.description) renderGoalProgress(goals);
+}
+
+function renderGoalProgress(goals) {
+  const el=document.getElementById('goalProgress');
+  const content=document.getElementById('goalProgressContent');
+  if(!el||!content) return;
+  el.style.display='block';
+  const start=goals.startDate?new Date(goals.startDate):new Date();
+  const mp=Math.floor((new Date()-start)/(1000*60*60*24*30));
+  const tm=goals.months||18; const pct=Math.min(Math.round(mp/tm*100),100);
+  content.innerHTML='<div style="font-size:14px;font-weight:600;margin-bottom:8px">'+goals.description+'</div><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:4px"><span>ผ่านมา '+mp+' เดือน</span><span>เป้า '+tm+' เดือน</span></div><div style="height:10px;background:var(--border);border-radius:5px;overflow:hidden"><div style="height:100%;width:'+pct+'%;background:var(--green);border-radius:5px"></div></div><div style="font-size:13px;font-weight:700;color:var(--green);margin-top:6px;text-align:center">'+pct+'% ของเป้าหมาย</div>';
+}
+
+window.saveGoal = async function() {
+  const desc=document.getElementById('g-goal')?.value.trim();
+  if(!desc){toast('กรุณาใส่เป้าหมาย');return;}
+  const goals={description:desc,months:parseFloat(document.getElementById('g-months')?.value)||18,amount:parseFloat(document.getElementById('g-amount')?.value)||0,startDate:new Date().toISOString()};
+  showLoad(true);
+  try{await updateDoc(doc(db,'stores',storeId),{goals});renderGoalProgress(goals);toast('บันทึกเป้าหมายแล้ว ✓');}
+  catch(e){toast('เกิดข้อผิดพลาด');}
+  showLoad(false);
+};
+
+window.saveStoreInfo = async function() {
+  const name=document.getElementById('g-store-name')?.value.trim();
+  if(!name){toast('กรุณาใส่ชื่อร้าน');return;}
+  showLoad(true);
+  try{
+    await updateDoc(doc(db,'stores',storeId),{'info.name':name,'info.owner':document.getElementById('g-owner-name')?.value.trim()||'','info.seats':parseFloat(document.getElementById('g-seats')?.value)||0});
+    document.getElementById('appStoreName').textContent='🐟 '+name;
+    toast('บันทึกข้อมูลร้านแล้ว ✓');
+  }catch(e){toast('เกิดข้อผิดพลาด');}
+  showLoad(false);
+};
+
 </script>
 </body>
 </html>
